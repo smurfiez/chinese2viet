@@ -18,6 +18,7 @@ import {
   LayoutGrid,
   Table,
   Trash2,
+  Globe,
 } from 'lucide-react';
 import { convertChineseToVietnamese } from './utils/converter.js';
 import {
@@ -26,22 +27,39 @@ import {
   stopSpeech,
   isSpeechSupported,
 } from './utils/speech.js';
+import { UI_TRANSLATIONS } from './data/translations.js';
 
 // OpenCC converters
 const s2tConverter = OpenCC.Converter({ from: 'cn', to: 'hk' });
 const t2sConverter = OpenCC.Converter({ from: 'hk', to: 'cn' });
 
-const PRESETS = [
-  { label: '你好 (Chào hỏi)', text: '你好，很高兴认识你！' },
-  { label: '我爱你 (Tình cảm)', text: '我爱你，一生一世在一起。' },
-  { label: '新年快乐 (Chúc mừng)', text: '祝你新年快乐，万事如意，身体健康！' },
-  { label: '千里之行 (Thành ngữ)', text: '千里之行，始于足下。' },
-  { label: '喝咖啡 (Đời sống)', text: '今天天气真好，去喝咖啡吧！' },
-];
-
 export default function App() {
+  const [uiLang, setUiLang] = useState(() => {
+    try {
+      const saved = localStorage.getItem('chinese2viet_lang');
+      if (saved === 'vi' || saved === 'en') return saved;
+      if (typeof navigator !== 'undefined' && navigator.language) {
+        return navigator.language.toLowerCase().startsWith('vi') ? 'vi' : 'en';
+      }
+    } catch {
+      // ignore
+    }
+    return 'en';
+  });
+
+  const t = UI_TRANSLATIONS[uiLang] || UI_TRANSLATIONS.vi;
+
+  const handleLanguageChange = (lang) => {
+    setUiLang(lang);
+    try {
+      localStorage.setItem('chinese2viet_lang', lang);
+    } catch {
+      // ignore
+    }
+  };
+
   const [inputText, setInputText] = useState('你好，很高兴认识你！今天天气真好。');
-  const [activeTab, setActiveTab] = useState('ruby'); // 'ruby' | 'comparative' | 'fulltext'
+  const [activeTab, setActiveTab] = useState('fulltext'); // 'fulltext' | 'ruby' | 'comparative'
   const [isTraditional, setIsTraditional] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const [speakingState, setSpeakingState] = useState({ active: false, type: null, id: null });
@@ -74,11 +92,11 @@ export default function App() {
       if (!text) return;
       navigator.clipboard.writeText(text).then(() => {
         setCopiedKey(key);
-        triggerToast('Đã sao chép vào bộ nhớ tạm!');
+        triggerToast(t.copiedToast);
         setTimeout(() => setCopiedKey(null), 1800);
       });
     },
-    [triggerToast]
+    [t.copiedToast, triggerToast]
   );
 
   // Paste helper
@@ -87,11 +105,11 @@ export default function App() {
       navigator.clipboard.readText().then((clipText) => {
         if (clipText) {
           setInputText(clipText);
-          triggerToast('Đã dán văn bản!');
+          triggerToast(t.pastedToast);
         }
       });
     }
-  }, [triggerToast]);
+  }, [t.pastedToast, triggerToast]);
 
   // Clear helper
   const handleClear = useCallback(() => {
@@ -106,14 +124,14 @@ export default function App() {
       const simplified = t2sConverter(inputText);
       setInputText(simplified);
       setIsTraditional(false);
-      triggerToast('Đã chuyển sang chữ Giản thể (Simplified)');
+      triggerToast(t.switchedToSimp);
     } else {
       const traditional = s2tConverter(inputText);
       setInputText(traditional);
       setIsTraditional(true);
-      triggerToast('Đã chuyển sang chữ Phồn thể (Traditional)');
+      triggerToast(t.switchedToTrad);
     }
-  }, [isTraditional, inputText, triggerToast]);
+  }, [isTraditional, inputText, t.switchedToSimp, t.switchedToTrad, triggerToast]);
 
   // Audio Playback
   const handleSpeakChinese = useCallback(
@@ -146,7 +164,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans">
       {/* Toast popup */}
       {toastMessage && (
         <div className="fixed top-5 right-5 z-50 bg-slate-900/90 text-white px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 text-sm backdrop-blur-sm transition-all animate-bounce">
@@ -156,8 +174,8 @@ export default function App() {
       )}
 
       {/* Top Header */}
-      <header className="border-b border-slate-200 bg-white/90 backdrop-blur sticky top-0 z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+      <header className="border-b border-slate-200 bg-white/95 backdrop-blur sticky top-0 z-30 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-rose-500 flex items-center justify-center text-white shadow-md shadow-indigo-200">
@@ -166,47 +184,75 @@ export default function App() {
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
-                    Chinese2Viet
+                    {t.appTitle}
                   </h1>
                   <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200/60">
-                    Hán-Việt & Phát Âm
+                    {t.badge}
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm text-slate-500">
-                  Âm Hán-Việt & Phiên âm phát âm tiếng Trung theo vần điệu tiếng Việt
+                  {t.subtitle}
                 </p>
               </div>
             </div>
 
-            {/* Quick Actions / Audio Controls */}
+            {/* Language Switcher & Controls */}
             <div className="flex items-center flex-wrap gap-2">
+              {/* UI Language Switcher (i18n) */}
+              <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-semibold mr-1">
+                <button
+                  onClick={() => handleLanguageChange('vi')}
+                  className={`px-2.5 py-1 rounded-md transition-all flex items-center gap-1 ${
+                    uiLang === 'vi'
+                      ? 'bg-white text-indigo-700 shadow-xs font-bold'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                  title="Giao diện Tiếng Việt"
+                >
+                  <span>🇻🇳</span>
+                  <span>Tiếng Việt</span>
+                </button>
+                <button
+                  onClick={() => handleLanguageChange('en')}
+                  className={`px-2.5 py-1 rounded-md transition-all flex items-center gap-1 ${
+                    uiLang === 'en'
+                      ? 'bg-white text-indigo-700 shadow-xs font-bold'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                  title="English Interface"
+                >
+                  <span>🇬🇧</span>
+                  <span>English</span>
+                </button>
+              </div>
+
               {speakingState.active ? (
                 <button
                   onClick={handleStopSpeech}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs sm:text-sm font-medium border border-rose-200 transition-colors shadow-sm"
-                  title="Dừng phát âm"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs sm:text-sm font-medium border border-rose-200 transition-colors shadow-xs"
+                  title={t.stopSpeech}
                 >
                   <VolumeX className="w-4 h-4 text-rose-600 animate-pulse" />
-                  <span>Dừng đọc</span>
+                  <span>{t.stopSpeech}</span>
                 </button>
               ) : null}
 
               <button
                 onClick={() => handleSpeakChinese(inputText, 'header-zh')}
                 disabled={!inputText.trim() || !isSpeechSupported()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-40 text-white text-xs sm:text-sm font-medium transition-all shadow-sm shadow-indigo-200"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-40 text-white text-xs sm:text-sm font-medium transition-all shadow-xs shadow-indigo-200"
               >
                 <Volume2 className="w-4 h-4" />
-                <span>Nghe tiếng Trung (Bắc Kinh)</span>
+                <span>{t.listenChinese}</span>
               </button>
 
               <button
                 onClick={() => handleSpeakVietnamese(result.phoneticVietText, 'header-vi')}
                 disabled={!result.phoneticVietText || !isSpeechSupported()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-40 text-white text-xs sm:text-sm font-medium transition-all shadow-sm shadow-emerald-200"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-40 text-white text-xs sm:text-sm font-medium transition-all shadow-xs shadow-emerald-200"
               >
                 <Volume2 className="w-4 h-4" />
-                <span>Nghe âm tiếng Việt</span>
+                <span>{t.listenVietnamese}</span>
               </button>
 
               <button
@@ -216,21 +262,21 @@ export default function App() {
                     ? 'bg-amber-50 text-amber-800 border-amber-300'
                     : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'
                 }`}
-                title="Bảng tra thanh điệu"
+                title={t.toneGuide}
               >
                 <HelpCircle className="w-4 h-4 text-amber-600" />
-                <span className="hidden sm:inline">Hướng dẫn thanh điệu</span>
+                <span className="hidden sm:inline">{t.toneGuide}</span>
               </button>
             </div>
           </div>
 
           {/* Quick preset chips */}
-          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
             <span className="text-slate-400 font-medium whitespace-nowrap flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-              Mẫu nhanh:
+              {t.presetLabel}
             </span>
-            {PRESETS.map((p, idx) => (
+            {t.presets.map((p, idx) => (
               <button
                 key={idx}
                 onClick={() => {
@@ -250,94 +296,74 @@ export default function App() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col gap-5">
         {/* Collapsible Tone & Pronunciation Guide */}
         {showGuide && (
-          <section className="bg-amber-50/70 border border-amber-200 rounded-2xl p-4 sm:p-5 shadow-sm transition-all animate-fade-in">
+          <section className="bg-amber-50/70 border border-amber-200 rounded-2xl p-4 sm:p-5 shadow-xs transition-all animate-fade-in">
             <div className="flex items-center justify-between pb-3 border-b border-amber-200/60 mb-4">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-amber-700" />
                 <h2 className="text-base font-bold text-amber-950">
-                  Bảng Hướng Dẫn Thanh Điệu & Đối Chiếu Âm Tiếng Việt
+                  {t.guideTitle}
                 </h2>
               </div>
               <button
                 onClick={() => setShowGuide(false)}
                 className="text-amber-700 hover:text-amber-900 text-xs px-2 py-1 rounded hover:bg-amber-100"
               >
-                Đóng
+                {t.close}
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs mb-4">
               <div className="bg-white p-3 rounded-xl border border-amber-200/80 shadow-xs">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-slate-800">Thanh 1 (阴平 - Cao phẳng)</span>
+                  <span className="font-bold text-slate-800">{t.tone1Title}</span>
                   <span className="px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-mono font-bold">
                     ā
                   </span>
                 </div>
-                <p className="text-slate-600">
-                  Cao độ 55, ngân đều phẳng, không đổi cao độ.
-                </p>
-                <div className="mt-2 text-indigo-700 font-medium">
-                  → Âm Việt: <span className="font-bold">Thanh Ngang</span> (mā → ma, sān → san)
-                </div>
+                <p className="text-slate-600">{t.tone1Desc}</p>
+                <div className="mt-2 text-indigo-700 font-medium">{t.tone1Rule}</div>
               </div>
 
               <div className="bg-white p-3 rounded-xl border border-amber-200/80 shadow-xs">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-slate-800">Thanh 2 (阳平 - Vút lên)</span>
+                  <span className="font-bold text-slate-800">{t.tone2Title}</span>
                   <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-mono font-bold">
                     á
                   </span>
                 </div>
-                <p className="text-slate-600">
-                  Cao độ 35, bắt đầu trung bình rồi vuốt lên cao.
-                </p>
-                <div className="mt-2 text-emerald-700 font-medium">
-                  → Âm Việt: <span className="font-bold">Dấu Sắc</span> (má → má, rén → rấn)
-                </div>
+                <p className="text-slate-600">{t.tone2Desc}</p>
+                <div className="mt-2 text-emerald-700 font-medium">{t.tone2Rule}</div>
               </div>
 
               <div className="bg-white p-3 rounded-xl border border-amber-200/80 shadow-xs">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-slate-800">Thanh 3 (上声 - Xuống lên)</span>
+                  <span className="font-bold text-slate-800">{t.tone3Title}</span>
                   <span className="px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 font-mono font-bold">
                     ǎ
                   </span>
                 </div>
-                <p className="text-slate-600">
-                  Cao độ 214, trầm xuống đáy rồi hất nhẹ lên.
-                </p>
-                <div className="mt-2 text-amber-800 font-medium">
-                  → Âm Việt: <span className="font-bold">Dấu Hỏi / Ngã</span> (mǎ → mả, hǎo → hảo)
-                </div>
+                <p className="text-slate-600">{t.tone3Desc}</p>
+                <div className="mt-2 text-amber-800 font-medium">{t.tone3Rule}</div>
               </div>
 
               <div className="bg-white p-3 rounded-xl border border-amber-200/80 shadow-xs">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-slate-800">Thanh 4 (去声 - Rơi mạnh)</span>
+                  <span className="font-bold text-slate-800">{t.tone4Title}</span>
                   <span className="px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 font-mono font-bold">
                     à
                   </span>
                 </div>
-                <p className="text-slate-600">
-                  Cao độ 51, rơi từ đỉnh xuống đáy, dứt khoát nhanh.
-                </p>
-                <div className="mt-2 text-rose-700 font-medium">
-                  → Âm Việt: <span className="font-bold">Dứt khoát đanh</span> (mà → mạ/ma, bà → ba)
-                </div>
+                <p className="text-slate-600">{t.tone4Desc}</p>
+                <div className="mt-2 text-rose-700 font-medium">{t.tone4Rule}</div>
               </div>
             </div>
 
             <div className="text-xs text-amber-900 bg-amber-100/60 p-3 rounded-xl border border-amber-200 flex flex-col sm:flex-row gap-2">
               <div className="flex-1">
-                <span className="font-bold">Phân biệt 2 cách đọc:</span>
+                <span className="font-bold">{t.guideNoteTitle}</span>
                 <ul className="list-disc pl-4 mt-1 space-y-0.5 text-slate-700">
-                  <li>
-                    <strong className="text-indigo-800">Âm Hán-Việt (Sino-Vietnamese):</strong> Cách đọc truyền thống của từ Hán theo ngữ âm tiếng Việt cổ, giúp người Việt hiểu rõ nghĩa gốc từ vựng và tra từ điển.
-                  </li>
-                  <li>
-                    <strong className="text-emerald-800">Phiên âm phát âm tiếng Việt (Phonetic):</strong> Mô phỏng âm thanh tiếng Quan thoại hiện đại (Mandarin) bằng chữ quốc ngữ, giúp người mới học đọc chuẩn ngữ điệu Bắc Kinh ngay lập tức.
-                  </li>
+                  <li>{t.guideNote1}</li>
+                  <li>{t.guideNote2}</li>
                 </ul>
               </div>
             </div>
@@ -350,7 +376,7 @@ export default function App() {
           <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200 shadow-xs p-4 sm:p-5 flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <label htmlFor="chinese-input" className="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
-                <span>Nhập chữ Hán (Văn bản tiếng Trung)</span>
+                <span>{t.inputLabel}</span>
                 {speakingState.active && speakingState.type === 'zh' && (
                   <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping inline-block" />
                 )}
@@ -360,10 +386,10 @@ export default function App() {
               <button
                 onClick={handleToggleScript}
                 className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium border border-slate-200 transition-colors"
-                title="Chuyển đổi Giản thể / Phồn thể"
+                title={isTraditional ? t.simplified : t.traditional}
               >
                 <ArrowRightLeft className="w-3.5 h-3.5 text-indigo-600" />
-                <span>{isTraditional ? 'Phồn thể (繁)' : 'Giản thể (简)'}</span>
+                <span>{isTraditional ? t.traditional : t.simplified}</span>
               </button>
             </div>
 
@@ -374,8 +400,8 @@ export default function App() {
                 rows={9}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                placeholder="Nhập hoặc dán chữ tiếng Trung vào đây (ví dụ: 你好，很高兴认识你)..."
-                className="w-full rounded-xl border border-slate-300 p-3.5 text-slate-800 font-chinese text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-600 transition-all resize-y placeholder:font-sans placeholder:text-sm placeholder:text-slate-400"
+                placeholder={t.inputPlaceholder}
+                className="w-full rounded-xl border border-slate-300 p-3.5 text-slate-800 font-chinese text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-600 transition-all resize-y placeholder:font-sans placeholder:text-sm placeholder:text-slate-400 leading-relaxed"
               />
             </div>
 
@@ -383,10 +409,10 @@ export default function App() {
             <div className="flex items-center justify-between text-xs text-slate-500 pt-1 border-t border-slate-100">
               <div className="flex items-center gap-3">
                 <span>
-                  Tổng ký tự: <strong className="text-slate-700 font-semibold">{stats.chars}</strong>
+                  {t.totalChars} <strong className="text-slate-700 font-semibold">{stats.chars}</strong>
                 </span>
                 <span>
-                  Chữ Hán: <strong className="text-indigo-600 font-semibold">{stats.chineseChars}</strong>
+                  {t.chineseChars} <strong className="text-indigo-600 font-semibold">{stats.chineseChars}</strong>
                 </span>
               </div>
 
@@ -394,19 +420,19 @@ export default function App() {
                 <button
                   onClick={handlePaste}
                   className="inline-flex items-center gap-1 px-2 py-1 rounded hover:bg-slate-100 text-slate-600 transition-colors"
-                  title="Dán từ Clipboard"
+                  title={t.paste}
                 >
                   <Clipboard className="w-3.5 h-3.5" />
-                  <span>Dán</span>
+                  <span>{t.paste}</span>
                 </button>
                 <button
                   onClick={handleClear}
                   disabled={!inputText}
                   className="inline-flex items-center gap-1 px-2 py-1 rounded hover:bg-rose-50 text-slate-500 hover:text-rose-600 disabled:opacity-30 transition-colors"
-                  title="Xoá nội dung"
+                  title={t.clear}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  <span>Xóa</span>
+                  <span>{t.clear}</span>
                 </button>
               </div>
             </div>
@@ -418,6 +444,18 @@ export default function App() {
             <div className="px-4 sm:px-5 pt-3.5 pb-2.5 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-1 bg-slate-200/70 p-1 rounded-xl text-xs font-medium text-slate-600">
                 <button
+                  onClick={() => setActiveTab('fulltext')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
+                    activeTab === 'fulltext'
+                      ? 'bg-white text-indigo-700 shadow-xs font-semibold'
+                      : 'hover:text-slate-900'
+                  }`}
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>{t.tabFullText}</span>
+                </button>
+
+                <button
                   onClick={() => setActiveTab('ruby')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
                     activeTab === 'ruby'
@@ -426,7 +464,7 @@ export default function App() {
                   }`}
                 >
                   <LayoutGrid className="w-3.5 h-3.5" />
-                  <span>Thẻ từng chữ (Ruby Cards)</span>
+                  <span>{t.tabRuby}</span>
                 </button>
 
                 <button
@@ -438,19 +476,7 @@ export default function App() {
                   }`}
                 >
                   <Table className="w-3.5 h-3.5" />
-                  <span>Song song (Comparative)</span>
-                </button>
-
-                <button
-                  onClick={() => setActiveTab('fulltext')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-                    activeTab === 'fulltext'
-                      ? 'bg-white text-indigo-700 shadow-xs font-semibold'
-                      : 'hover:text-slate-900'
-                  }`}
-                >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>Văn bản liền mạch (Full Text)</span>
+                  <span>{t.tabComparative}</span>
                 </button>
               </div>
 
@@ -460,19 +486,19 @@ export default function App() {
                   onClick={() => handleSpeakChinese(inputText, 'pane-zh')}
                   disabled={!inputText.trim()}
                   className="px-2 py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium flex items-center gap-1 transition-colors"
-                  title="Nghe phát âm tiếng Trung"
+                  title="Play Chinese audio"
                 >
                   <Volume2 className="w-3.5 h-3.5" />
-                  <span>Trung</span>
+                  <span>{t.listenZhShort}</span>
                 </button>
                 <button
                   onClick={() => handleSpeakVietnamese(result.phoneticVietText, 'pane-vi')}
                   disabled={!result.phoneticVietText}
                   className="px-2 py-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium flex items-center gap-1 transition-colors"
-                  title="Nghe đọc theo âm tiếng Việt"
+                  title="Play Vietnamese sound audio"
                 >
                   <Volume2 className="w-3.5 h-3.5" />
-                  <span>Việt</span>
+                  <span>{t.listenViShort}</span>
                 </button>
               </div>
             </div>
@@ -482,9 +508,9 @@ export default function App() {
               {!inputText.trim() ? (
                 <div className="h-72 flex flex-col items-center justify-center text-slate-400 text-center p-6">
                   <Languages className="w-12 h-12 text-slate-300 mb-3 stroke-[1.5]" />
-                  <p className="text-sm font-medium text-slate-600">Chưa có nội dung chuyển đổi</p>
+                  <p className="text-sm font-medium text-slate-600">{t.emptyTitle}</p>
                   <p className="text-xs text-slate-400 mt-1 max-w-sm">
-                    Hãy nhập chữ tiếng Trung ở khung bên trái hoặc nhấn vào một trong các câu mẫu nhanh phía trên.
+                    {t.emptyDesc}
                   </p>
                 </div>
               ) : (
@@ -494,7 +520,6 @@ export default function App() {
                     <div className="flex flex-wrap gap-2.5 sm:gap-3 items-start content-start">
                       {result.tokens.map((token, index) => {
                         if (!token.isChinese) {
-                          // Handle whitespace, newlines, and punctuation gracefully
                           if (token.char === '\n') {
                             return <div key={index} className="w-full h-2" />;
                           }
@@ -514,7 +539,7 @@ export default function App() {
                         return (
                           <div
                             key={index}
-                            className={`group relative flex flex-col items-center p-2.5 sm:p-3 rounded-xl border transition-all duration-150 ${
+                            className={`group relative flex flex-col items-center p-2.5 sm:p-3 rounded-xl border transition-all duration-150 min-w-[70px] ${
                               isCardSpeaking
                                 ? 'bg-indigo-50 border-indigo-400 shadow-md ring-2 ring-indigo-200'
                                 : 'bg-slate-50/70 hover:bg-white border-slate-200 hover:border-indigo-300 hover:shadow-md'
@@ -530,20 +555,20 @@ export default function App() {
                               {token.char}
                             </span>
 
-                            {/* Badges: Phonetic & Han-Viet */}
+                            {/* Badges: Vietnamese Phonetic Sound & Sino-Vietnamese (Hán-Việt) */}
                             <div className="flex flex-col gap-1 w-full mt-1">
                               {/* Vietnamese Phonetic Sound */}
                               <div
-                                className="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[11px] font-bold text-center tracking-tight"
-                                title="Phiên âm tiếng Việt tương đương"
+                                className="px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[11px] font-bold text-center tracking-tight"
+                                title={`${t.phoneticBadge}: ${token.phoneticViet}`}
                               >
                                 {token.phoneticViet}
                               </div>
 
                               {/* Sino-Vietnamese (Hán-Việt) reading */}
                               <div
-                                className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-medium text-center truncate max-w-[70px]"
-                                title={`Âm Hán-Việt: ${token.hanVietOptions.join(' / ')}`}
+                                className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-medium text-center truncate max-w-[80px]"
+                                title={`${t.hanvietBadge}: ${token.hanVietOptions.join(' / ')}`}
                               >
                                 {token.hanViet}
                               </div>
@@ -553,7 +578,7 @@ export default function App() {
                             <button
                               onClick={() => handleSpeakChinese(token.char, `card-${index}`)}
                               className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-white text-indigo-600 hover:bg-indigo-50 shadow-xs border border-indigo-200 transition-opacity"
-                              title={`Nghe chữ ${token.char}`}
+                              title={`Play ${token.char}`}
                             >
                               <Volume2 className="w-3 h-3" />
                             </button>
@@ -569,12 +594,12 @@ export default function App() {
                       <table className="w-full text-left text-sm">
                         <thead className="bg-slate-100/80 text-slate-600 font-semibold text-xs border-b border-slate-200">
                           <tr>
-                            <th className="py-2.5 px-3">#</th>
-                            <th className="py-2.5 px-3">Chữ Hán</th>
-                            <th className="py-2.5 px-3">Pinyin</th>
-                            <th className="py-2.5 px-3">Phiên Âm Tiếng Việt</th>
-                            <th className="py-2.5 px-3">Âm Hán-Việt</th>
-                            <th className="py-2.5 px-3 text-center">Nghe</th>
+                            <th className="py-2.5 px-3">{t.tableIndex}</th>
+                            <th className="py-2.5 px-3">{t.tableHanzi}</th>
+                            <th className="py-2.5 px-3">{t.tablePinyin}</th>
+                            <th className="py-2.5 px-3">{t.tablePhonetic}</th>
+                            <th className="py-2.5 px-3">{t.tableHanviet}</th>
+                            <th className="py-2.5 px-3 text-center">{t.tableListen}</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
@@ -606,7 +631,7 @@ export default function App() {
                                   <button
                                     onClick={() => handleSpeakChinese(token.char, `tbl-${idx}`)}
                                     className="p-1 rounded-md text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-                                    title={`Nghe phát âm chữ ${token.char}`}
+                                    title={`Play ${token.char}`}
                                   >
                                     <Volume2 className="w-4 h-4" />
                                   </button>
@@ -626,20 +651,20 @@ export default function App() {
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-indigo-600 inline-block" />
-                            Phiên âm phát âm theo vần tiếng Việt
+                            {t.fulltextPhoneticTitle}
                           </span>
                           <div className="flex items-center gap-1">
                             <button
                               onClick={() => handleSpeakVietnamese(result.phoneticVietText, 'ft-vi')}
                               className="p-1.5 rounded-lg text-indigo-700 hover:bg-indigo-100 transition-colors"
-                              title="Nghe phát âm"
+                              title="Play audio"
                             >
                               <Volume2 className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleCopy(result.phoneticVietText, 'copy-phonetic')}
                               className="p-1.5 rounded-lg text-indigo-700 hover:bg-indigo-100 transition-colors"
-                              title="Sao chép"
+                              title="Copy"
                             >
                               {copiedKey === 'copy-phonetic' ? (
                                 <Check className="w-4 h-4 text-emerald-600" />
@@ -649,33 +674,33 @@ export default function App() {
                             </button>
                           </div>
                         </div>
-                        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed select-all">
+                        <p className="text-base sm:text-lg font-semibold text-indigo-950 font-sans leading-relaxed select-all">
                           {result.phoneticVietText}
                         </p>
-                        <p className="text-xs text-indigo-600/80 mt-2 italic">
-                          💡 Đọc to đoạn này bằng tiếng Việt sẽ tạo ra ngữ điệu rất sát với tiếng Bắc Kinh chuẩn.
+                        <p className="mt-2 text-xs text-indigo-600/80 italic">
+                          {t.fulltextPhoneticTip}
                         </p>
                       </div>
 
-                      {/* 2. Sino-Vietnamese (Hán-Việt) Reading */}
+                      {/* 2. Sino-Vietnamese (Hán-Việt) Output */}
                       <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/40 relative group">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-xs font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-amber-600 inline-block" />
-                            Âm Hán - Việt truyền thống
+                            {t.fulltextHanvietTitle}
                           </span>
                           <div className="flex items-center gap-1">
                             <button
                               onClick={() => handleSpeakVietnamese(result.hanVietText, 'ft-hv')}
                               className="p-1.5 rounded-lg text-amber-800 hover:bg-amber-100 transition-colors"
-                              title="Nghe âm Hán-Việt"
+                              title="Play audio"
                             >
                               <Volume2 className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleCopy(result.hanVietText, 'copy-hanviet')}
                               className="p-1.5 rounded-lg text-amber-800 hover:bg-amber-100 transition-colors"
-                              title="Sao chép"
+                              title="Copy"
                             >
                               {copiedKey === 'copy-hanviet' ? (
                                 <Check className="w-4 h-4 text-emerald-600" />
@@ -685,33 +710,33 @@ export default function App() {
                             </button>
                           </div>
                         </div>
-                        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed select-all">
+                        <p className="text-base sm:text-lg font-medium text-amber-950 font-sans leading-relaxed select-all">
                           {result.hanVietText}
                         </p>
-                        <p className="text-xs text-amber-800/80 mt-2 italic">
-                          💡 Âm Hán-Việt giúp đối chiếu hiểu nghĩa từ vựng tiếng Việt gốc Hán.
+                        <p className="mt-2 text-xs text-amber-700/80 italic">
+                          {t.fulltextHanvietTip}
                         </p>
                       </div>
 
-                      {/* 3. Pinyin with Tones */}
-                      <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/40 relative group">
+                      {/* 3. Standard Pinyin Output */}
+                      <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 relative group">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+                          <span className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block" />
-                            Pinyin (Bính âm có dấu)
+                            {t.fulltextPinyinTitle}
                           </span>
                           <div className="flex items-center gap-1">
                             <button
-                              onClick={() => handleSpeakChinese(inputText, 'ft-py')}
-                              className="p-1.5 rounded-lg text-emerald-800 hover:bg-emerald-100 transition-colors"
-                              title="Nghe tiếng Trung chuẩn"
+                              onClick={() => handleSpeakChinese(inputText, 'ft-pinyin')}
+                              className="p-1.5 rounded-lg text-slate-700 hover:bg-slate-200 transition-colors"
+                              title="Play audio"
                             >
                               <Volume2 className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleCopy(result.pinyinText, 'copy-pinyin')}
-                              className="p-1.5 rounded-lg text-emerald-800 hover:bg-emerald-100 transition-colors"
-                              title="Sao chép"
+                              className="p-1.5 rounded-lg text-slate-700 hover:bg-slate-200 transition-colors"
+                              title="Copy"
                             >
                               {copiedKey === 'copy-pinyin' ? (
                                 <Check className="w-4 h-4 text-emerald-600" />
@@ -721,7 +746,7 @@ export default function App() {
                             </button>
                           </div>
                         </div>
-                        <p className="text-base sm:text-lg font-mono font-medium text-emerald-950 leading-relaxed select-all">
+                        <p className="text-base font-mono font-medium text-slate-800 leading-relaxed select-all">
                           {result.pinyinText}
                         </p>
                       </div>
@@ -735,19 +760,11 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div>
-            Chinese2Viet © 2026 — Công cụ học tiếng Trung qua âm Hán-Việt & vần điệu tiếng Việt.
-          </div>
-          <div className="flex items-center gap-4 text-slate-400">
-            <span>OpenCC</span>
-            <span>•</span>
-            <span>pinyin-pro</span>
-            <span>•</span>
-            <span>hanviet-pinyin-words</span>
-          </div>
-        </div>
+      <footer className="border-t border-slate-200 py-4 text-center text-xs text-slate-400 mt-auto bg-white">
+        <p>{t.footerText}</p>
+        <p className="mt-1 text-[11px] text-slate-400">
+          OpenCC • pinyin-pro • hanviet-pinyin-words • Web Speech API
+        </p>
       </footer>
     </div>
   );

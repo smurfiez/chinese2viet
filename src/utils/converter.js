@@ -1,6 +1,7 @@
 import * as OpenCC from 'opencc-js';
 import { pinyin } from 'pinyin-pro';
 import { hanvietData } from 'hanviet-pinyin-words';
+import { getEnglishMeaning } from '../data/chineseEnglishDict.js';
 
 // Simplified to Traditional converter for dictionary lookup
 const s2t = OpenCC.Converter({ from: 'cn', to: 'hk' });
@@ -423,6 +424,7 @@ export function convertChineseToVietnamese(inputText) {
         phoneticViet: ch,
         hanViet: ch,
         hanVietOptions: [ch],
+        english: '',
       });
       continue;
     }
@@ -436,6 +438,7 @@ export function convertChineseToVietnamese(inputText) {
     // Get Hán-Việt reading using contextual pinyin
     const hvOptions = getHanVietReading(ch, pyNum);
     const hanViet = hvOptions.length > 0 ? hvOptions[0] : ch;
+    const english = getEnglishMeaning(ch);
 
     tokens.push({
       char: ch,
@@ -445,6 +448,7 @@ export function convertChineseToVietnamese(inputText) {
       phoneticViet: phoneticViet,
       hanViet: hanViet,
       hanVietOptions: hvOptions,
+      english: english,
     });
   }
 
