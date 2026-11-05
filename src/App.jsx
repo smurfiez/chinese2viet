@@ -555,22 +555,13 @@ export default function App() {
                               {token.char}
                             </span>
 
-                            {/* Badges: Vietnamese Phonetic Sound & Sino-Vietnamese (Hán-Việt) */}
+                            {/* Badges: Vietnamese Phonetic Sound */}
                             <div className="flex flex-col gap-1 w-full mt-1">
-                              {/* Vietnamese Phonetic Sound */}
                               <div
-                                className="px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[11px] font-bold text-center tracking-tight"
+                                className="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-xs font-bold text-center tracking-tight"
                                 title={`${t.phoneticBadge}: ${token.phoneticViet}`}
                               >
                                 {token.phoneticViet}
-                              </div>
-
-                              {/* Sino-Vietnamese (Hán-Việt) reading */}
-                              <div
-                                className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-medium text-center truncate max-w-[80px]"
-                                title={`${t.hanvietBadge}: ${token.hanVietOptions.join(' / ')}`}
-                              >
-                                {token.hanViet}
                               </div>
                             </div>
 
@@ -598,7 +589,6 @@ export default function App() {
                             <th className="py-2.5 px-3">{t.tableHanzi}</th>
                             <th className="py-2.5 px-3">{t.tablePinyin}</th>
                             <th className="py-2.5 px-3">{t.tablePhonetic}</th>
-                            <th className="py-2.5 px-3">{t.tableHanviet}</th>
                             <th className="py-2.5 px-3 text-center">{t.tableListen}</th>
                           </tr>
                         </thead>
@@ -618,14 +608,6 @@ export default function App() {
                                 </td>
                                 <td className="py-2.5 px-3 font-semibold text-indigo-700">
                                   {token.phoneticViet}
-                                </td>
-                                <td className="py-2.5 px-3 font-medium text-amber-900">
-                                  {token.hanViet}
-                                  {token.hanVietOptions.length > 1 && (
-                                    <span className="text-[10px] text-slate-400 ml-1">
-                                      ({token.hanVietOptions.slice(1).join(', ')})
-                                    </span>
-                                  )}
                                 </td>
                                 <td className="py-2.5 px-3 text-center">
                                   <button
@@ -682,43 +664,7 @@ export default function App() {
                         </p>
                       </div>
 
-                      {/* 2. Sino-Vietnamese (Hán-Việt) Output */}
-                      <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/40 relative group">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-amber-600 inline-block" />
-                            {t.fulltextHanvietTitle}
-                          </span>
-                          <div className="flex items-center gap-1">
-                            <button
-                              onClick={() => handleSpeakVietnamese(result.hanVietText, 'ft-hv')}
-                              className="p-1.5 rounded-lg text-amber-800 hover:bg-amber-100 transition-colors"
-                              title="Play audio"
-                            >
-                              <Volume2 className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleCopy(result.hanVietText, 'copy-hanviet')}
-                              className="p-1.5 rounded-lg text-amber-800 hover:bg-amber-100 transition-colors"
-                              title="Copy"
-                            >
-                              {copiedKey === 'copy-hanviet' ? (
-                                <Check className="w-4 h-4 text-emerald-600" />
-                              ) : (
-                                <Copy className="w-4 h-4" />
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                        <p className="text-base sm:text-lg font-medium text-amber-950 font-sans leading-relaxed select-all">
-                          {result.hanVietText}
-                        </p>
-                        <p className="mt-2 text-xs text-amber-700/80 italic">
-                          {t.fulltextHanvietTip}
-                        </p>
-                      </div>
-
-                      {/* 3. Standard Pinyin Output */}
+                      {/* 2. Standard Pinyin Output */}
                       <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 relative group">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
@@ -763,7 +709,7 @@ export default function App() {
       <footer className="border-t border-slate-200 py-4 text-center text-xs text-slate-400 mt-auto bg-white">
         <p>{t.footerText}</p>
         <p className="mt-1 text-[11px] text-slate-400">
-          OpenCC • pinyin-pro • hanviet-pinyin-words • Web Speech API
+          OpenCC • pinyin-pro • Web Speech API
         </p>
       </footer>
     </div>
