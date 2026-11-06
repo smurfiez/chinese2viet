@@ -28,6 +28,7 @@ import {
   isSpeechSupported,
 } from './utils/speech.js';
 import { UI_TRANSLATIONS } from './data/translations.js';
+import InstallPrompt from './components/InstallPrompt.jsx';
 
 // OpenCC converters
 const s2tConverter = OpenCC.Converter({ from: 'cn', to: 'hk' });
@@ -210,6 +211,9 @@ export default function App() {
           <span>{toastMessage}</span>
         </div>
       )}
+
+      {/* In-app install hint (PWA) */}
+      <InstallPrompt t={t} />
 
       {/* Top Header */}
       <header className="border-b border-slate-200 bg-white/95 backdrop-blur sticky top-0 z-30 shadow-xs pt-[env(safe-area-inset-top,0px)]">
