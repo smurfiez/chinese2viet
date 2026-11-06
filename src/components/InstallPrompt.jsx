@@ -96,7 +96,7 @@ export default function InstallPrompt({ t = UI_TRANSLATIONS.vi }) {
             type="button"
             onClick={handleDismiss}
             aria-label={t.installClose}
-            className="-mr-1 -mt-1 inline-flex min-h-[36px] min-w-[36px] shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 active:bg-slate-200"
+            className="-mr-1 -mt-1 inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 active:bg-slate-200 sm:min-h-[36px] sm:min-w-[36px]"
           >
             <X className="h-4 w-4" />
           </button>
@@ -120,7 +120,7 @@ export default function InstallPrompt({ t = UI_TRANSLATIONS.vi }) {
               <li>{t.installIosStep2}</li>
               <li>{t.installIosStep3}</li>
             </ol>
-            <p className="mt-2 text-[11px] text-slate-400">{t.installIosNote}</p>
+            <p className="mt-2 text-[11px] text-slate-500">{t.installIosNote}</p>
           </>
         )}
       </div>

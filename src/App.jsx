@@ -6,7 +6,6 @@ import {
   Copy,
   Check,
   RotateCcw,
-  Sparkles,
   BookOpen,
   Languages,
   HelpCircle,
@@ -167,19 +166,18 @@ export default function App() {
   // Language Switcher Component
   const renderLanguageSwitcher = (isMobile = false) => (
     <div
-      className={`flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-semibold shrink-0 ${
+      className={`flex items-center bg-slate-100 p-0.5 sm:p-1 rounded-xl border border-slate-200 text-xs font-semibold shrink-0 ${
         isMobile ? 'md:hidden' : 'hidden md:flex'
       }`}
     >
       <button
         onClick={() => handleLanguageChange('vi')}
-        className={`min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 rounded-lg transition-all flex items-center gap-1 active:scale-95 ${
+        className={`min-h-[44px] sm:min-h-[38px] px-2.5 sm:px-3 rounded-lg transition-all flex items-center gap-1 active:scale-95 ${
           uiLang === 'vi'
             ? 'bg-white text-indigo-700 shadow-xs font-bold'
             : 'text-slate-600 hover:text-slate-900'
         }`}
         title="Giao diện Tiếng Việt"
-        aria-label="Giao diện Tiếng Việt"
       >
         <span>🇻🇳</span>
         <span className="sm:hidden">VN</span>
@@ -187,13 +185,12 @@ export default function App() {
       </button>
       <button
         onClick={() => handleLanguageChange('en')}
-        className={`min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 rounded-lg transition-all flex items-center gap-1 active:scale-95 ${
+        className={`min-h-[44px] sm:min-h-[38px] px-2.5 sm:px-3 rounded-lg transition-all flex items-center gap-1 active:scale-95 ${
           uiLang === 'en'
             ? 'bg-white text-indigo-700 shadow-xs font-bold'
             : 'text-slate-600 hover:text-slate-900'
         }`}
         title="English Interface"
-        aria-label="English Interface"
       >
         <span>🇬🇧</span>
         <span className="sm:hidden">EN</span>
@@ -206,9 +203,9 @@ export default function App() {
     <div className="min-h-screen min-h-dvh flex flex-col bg-slate-50 text-slate-900 font-sans overflow-x-hidden">
       {/* Toast popup */}
       {toastMessage && (
-        <div className="fixed top-5 right-5 z-50 bg-slate-900/90 text-white px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 text-sm backdrop-blur-sm transition-all animate-bounce">
-          <Check className="w-4 h-4 text-emerald-400" />
-          <span>{toastMessage}</span>
+        <div className="fixed top-[max(1.25rem,env(safe-area-inset-top,0px))] right-[max(1.25rem,env(safe-area-inset-right,0px))] z-50 max-w-[calc(100vw_-_2.5rem)] bg-slate-900/90 text-white px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 text-sm backdrop-blur-sm transition-all animate-bounce">
+          <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span className="min-w-0 break-words">{toastMessage}</span>
         </div>
       )}
 
@@ -216,21 +213,21 @@ export default function App() {
       <InstallPrompt t={t} />
 
       {/* Top Header */}
-      <header className="border-b border-slate-200 bg-white/95 backdrop-blur sticky top-0 z-30 shadow-xs pt-[env(safe-area-inset-top,0px)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
+      <header className="border-b border-slate-200 bg-white/95 backdrop-blur relative sm:sticky sm:top-0 z-30 shadow-xs pt-[env(safe-area-inset-top,0px)]">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-3">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-1.5 sm:gap-3">
             {/* Top row on mobile: Brand identity & Mobile Language Switcher */}
-            <div className="flex items-center justify-between gap-2.5 sm:gap-3 w-full md:w-auto min-w-0">
-              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-rose-500 flex items-center justify-center text-white shadow-md shadow-indigo-200 shrink-0">
-                  <Languages className="w-5 h-5" />
+            <div className="flex items-center justify-between gap-2 sm:gap-3 w-full md:w-auto min-w-0">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-rose-500 flex items-center justify-center text-white shadow-md shadow-indigo-200 shrink-0">
+                  <Languages className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 sm:gap-2">
-                    <h1 className="text-lg sm:text-2xl font-bold tracking-tight text-slate-900 truncate">
+                    <h1 className="text-base sm:text-2xl font-bold tracking-tight text-slate-900 truncate">
                       {t.appTitle}
                     </h1>
-                    <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200/60 shrink-0">
+                    <span className="hidden sm:inline-flex items-center text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200/60 shrink-0">
                       {t.badge}
                     </span>
                   </div>
@@ -245,19 +242,19 @@ export default function App() {
             </div>
 
             {/* Bottom row on mobile / Controls on desktop */}
-            <div className="flex items-center gap-2 w-full md:w-auto">
+            <div className="flex items-center gap-1.5 sm:gap-2 w-full md:w-auto">
               {/* Language Switcher on desktop */}
               {renderLanguageSwitcher(false)}
 
               {speakingState.active ? (
                 <button
                   onClick={handleStopSpeech}
-                  className="min-h-[44px] inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 active:bg-rose-200 text-rose-700 text-xs sm:text-sm font-semibold border border-rose-200 transition-all shadow-xs active:scale-[0.98] shrink-0"
+                  className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center gap-1.5 px-0 sm:px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 active:bg-rose-200 text-rose-700 text-xs sm:text-sm font-semibold border border-rose-200 transition-all shadow-xs active:scale-[0.98] shrink-0"
                   title={t.stopSpeech}
                   aria-label={t.stopSpeech}
                 >
                   <VolumeX className="w-4 h-4 text-rose-600 animate-pulse shrink-0" />
-                  <span>{t.stopSpeech}</span>
+                  <span className="hidden sm:inline">{t.stopSpeech}</span>
                 </button>
               ) : null}
 
@@ -276,7 +273,7 @@ export default function App() {
               <button
                 onClick={() => handleSpeakVietnamese(result.phoneticVietText, 'header-vi')}
                 disabled={!result.phoneticVietText || !isSpeechSupported()}
-                className="min-h-[44px] flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-40 text-white text-xs sm:text-sm font-semibold transition-all shadow-xs shadow-emerald-200 active:scale-[0.98]"
+                className="min-h-[44px] flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-800 disabled:opacity-40 text-white text-xs sm:text-sm font-semibold transition-all shadow-xs shadow-emerald-200 active:scale-[0.98]"
                 title={t.listenVietnamese}
                 aria-label={t.listenVietnamese}
               >
@@ -302,25 +299,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Quick preset chips */}
-          <div className="mt-2 pt-2 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto no-scrollbar overscroll-x-contain -mx-4 px-4 sm:mx-0 sm:px-0 text-xs">
-            <span className="text-slate-400 font-medium whitespace-nowrap flex items-center gap-1 shrink-0 py-1">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-              <span className="hidden xs:inline">{t.presetLabel}</span>
-            </span>
-            {t.presets.map((p, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  setInputText(p.text);
-                  setIsTraditional(false);
-                }}
-                className="shrink-0 whitespace-nowrap px-3 py-1.5 min-h-[38px] sm:min-h-[32px] rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 active:bg-indigo-100 active:text-indigo-800 text-slate-700 border border-slate-200 hover:border-indigo-200 transition-all active:scale-95 flex items-center"
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
         </div>
       </header>
 
@@ -438,7 +416,7 @@ export default function App() {
               {/* Script Toggle */}
               <button
                 onClick={handleToggleScript}
-                className="inline-flex items-center gap-1.5 text-xs px-3 py-2 sm:py-1 rounded-lg bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-medium border border-slate-200 transition-all touch-manipulation active:scale-95 min-h-[40px] sm:min-h-0"
+                className="inline-flex items-center gap-1.5 text-xs px-3 py-2 sm:py-1 rounded-lg bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-medium border border-slate-200 transition-all touch-manipulation active:scale-95 min-h-[44px] sm:min-h-0"
                 title={isTraditional ? t.simplified : t.traditional}
               >
                 <ArrowRightLeft className="w-3.5 h-3.5 text-indigo-600" />
@@ -473,7 +451,7 @@ export default function App() {
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={handlePaste}
-                  className="inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-medium transition-all touch-manipulation active:scale-95 min-h-[40px] sm:min-h-0"
+                  className="inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-medium transition-all touch-manipulation active:scale-95 min-h-[44px] sm:min-h-0"
                   title={t.paste}
                 >
                   <Clipboard className="w-4 h-4 text-slate-500" />
@@ -482,7 +460,7 @@ export default function App() {
                 <button
                   onClick={handleClear}
                   disabled={!inputText}
-                  className="inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg hover:bg-rose-50 active:bg-rose-100 text-slate-500 hover:text-rose-600 active:text-rose-700 disabled:opacity-30 transition-all touch-manipulation active:scale-95 min-h-[40px] sm:min-h-0"
+                  className="inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg hover:bg-rose-50 active:bg-rose-100 text-slate-500 hover:text-rose-600 active:text-rose-700 disabled:opacity-30 transition-all touch-manipulation active:scale-95 min-h-[44px] sm:min-h-0"
                   title={t.clear}
                 >
                   <Trash2 className="w-4 h-4 text-slate-400 hover:text-rose-600" />
@@ -499,7 +477,7 @@ export default function App() {
               <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-slate-200/80 p-1 rounded-xl text-xs font-medium text-slate-600 w-full sm:w-auto">
                 <button
                   onClick={() => setActiveTab('fulltext')}
-                  className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 sm:px-3 rounded-lg transition-all touch-manipulation active:scale-95 min-h-[38px] ${
+                  className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 sm:px-3 rounded-lg transition-all touch-manipulation active:scale-95 min-h-[44px] sm:min-h-[38px] ${
                     activeTab === 'fulltext'
                       ? 'bg-white text-indigo-700 shadow-xs font-semibold'
                       : 'text-slate-600 hover:text-slate-900 active:bg-slate-300/60'
@@ -514,7 +492,7 @@ export default function App() {
 
                 <button
                   onClick={() => setActiveTab('ruby')}
-                  className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 sm:px-3 rounded-lg transition-all touch-manipulation active:scale-95 min-h-[38px] ${
+                  className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 sm:px-3 rounded-lg transition-all touch-manipulation active:scale-95 min-h-[44px] sm:min-h-[38px] ${
                     activeTab === 'ruby'
                       ? 'bg-white text-indigo-700 shadow-xs font-semibold'
                       : 'text-slate-600 hover:text-slate-900 active:bg-slate-300/60'
@@ -529,7 +507,7 @@ export default function App() {
 
                 <button
                   onClick={() => setActiveTab('comparative')}
-                  className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 sm:px-3 rounded-lg transition-all touch-manipulation active:scale-95 min-h-[38px] ${
+                  className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 sm:px-3 rounded-lg transition-all touch-manipulation active:scale-95 min-h-[44px] sm:min-h-[38px] ${
                     activeTab === 'comparative'
                       ? 'bg-white text-indigo-700 shadow-xs font-semibold'
                       : 'text-slate-600 hover:text-slate-900 active:bg-slate-300/60'
@@ -548,7 +526,7 @@ export default function App() {
                 <button
                   onClick={() => handleSpeakChinese(inputText, 'pane-zh')}
                   disabled={!inputText.trim()}
-                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 text-indigo-700 font-semibold border border-indigo-200/60 transition-all touch-manipulation active:scale-95 min-h-[38px] sm:min-h-0 disabled:opacity-40"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 text-indigo-700 font-semibold border border-indigo-200/60 transition-all touch-manipulation active:scale-95 min-h-[44px] sm:min-h-0 disabled:opacity-40"
                   title="Play Chinese audio"
                 >
                   <Volume2 className="w-3.5 h-3.5 shrink-0" />
@@ -557,7 +535,7 @@ export default function App() {
                 <button
                   onClick={() => handleSpeakVietnamese(result.phoneticVietText, 'pane-vi')}
                   disabled={!result.phoneticVietText}
-                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 text-emerald-700 font-semibold border border-emerald-200/60 transition-all touch-manipulation active:scale-95 min-h-[38px] sm:min-h-0 disabled:opacity-40"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 text-emerald-700 font-semibold border border-emerald-200/60 transition-all touch-manipulation active:scale-95 min-h-[44px] sm:min-h-0 disabled:opacity-40"
                   title="Play Vietnamese sound audio"
                 >
                   <Volume2 className="w-3.5 h-3.5 shrink-0" />
@@ -572,7 +550,7 @@ export default function App() {
                 <div className="h-64 sm:h-72 flex flex-col items-center justify-center text-slate-400 text-center p-4 sm:p-6">
                   <Languages className="w-10 h-10 sm:w-12 sm:h-12 text-slate-300 mb-2 sm:mb-3 stroke-[1.5]" />
                   <p className="text-sm font-medium text-slate-600">{t.emptyTitle}</p>
-                  <p className="text-xs text-slate-400 mt-1 max-w-sm">
+                  <p className="text-xs text-slate-500 mt-1 max-w-sm">
                     {t.emptyDesc}
                   </p>
                 </div>
@@ -604,7 +582,7 @@ export default function App() {
                             key={index}
                             type="button"
                             onClick={() => handleSpeakChinese(token.char, `card-${index}`)}
-                            className={`group relative flex flex-col items-center justify-between p-2 sm:p-3 rounded-xl border transition-all duration-150 w-full sm:w-auto sm:min-w-[76px] touch-manipulation active:scale-95 cursor-pointer select-none text-center ${
+                            className={`group relative flex flex-col items-center justify-between p-2 sm:p-3 rounded-xl border transition-all duration-150 w-full min-w-0 sm:w-auto sm:min-w-[76px] touch-manipulation active:scale-95 cursor-pointer select-none text-center ${
                               isCardSpeaking
                                 ? 'bg-indigo-50 border-indigo-400 shadow-md ring-2 ring-indigo-300 scale-[0.98]'
                                 : 'bg-slate-50/80 hover:bg-white active:bg-indigo-50/50 border-slate-200 hover:border-indigo-300 hover:shadow-xs'
@@ -612,7 +590,7 @@ export default function App() {
                             title={`Play ${token.char}`}
                           >
                             {/* Top: Pinyin with tone symbol */}
-                            <span className="text-[11px] sm:text-xs font-mono font-semibold text-emerald-700 tracking-tight leading-none mb-1">
+                            <span className="w-full max-w-full truncate text-[11px] sm:text-xs font-mono font-semibold text-emerald-700 tracking-tight leading-none mb-1">
                               {token.pinyin}
                             </span>
 
@@ -624,7 +602,7 @@ export default function App() {
                             {/* Badges: Vietnamese Phonetic Sound */}
                             <div className="w-full mt-1">
                               <div
-                                className={`px-1 sm:px-2 py-0.5 rounded text-[11px] sm:text-xs font-bold text-center tracking-tight truncate ${
+                                className={`w-full max-w-full px-1 sm:px-2 py-0.5 rounded text-[11px] sm:text-xs font-bold text-center tracking-tight truncate ${
                                   isCardSpeaking
                                     ? 'bg-indigo-200 text-indigo-900'
                                     : 'bg-indigo-100 text-indigo-800'
@@ -653,7 +631,7 @@ export default function App() {
 
                   {/* VIEW 2: Comparative Table */}
                   {activeTab === 'comparative' && (
-                    <div className="overflow-x-auto overscroll-x-contain -webkit-overflow-scrolling-touch border border-slate-200 rounded-xl shadow-xs">
+                    <div className="overflow-x-auto overscroll-x-contain no-scrollbar touch-scroll border border-slate-200 rounded-xl shadow-xs">
                       <table className="w-full text-left text-sm whitespace-nowrap">
                         <thead className="bg-slate-100/90 text-slate-600 font-semibold text-xs border-b border-slate-200">
                           <tr>
@@ -688,7 +666,7 @@ export default function App() {
                                 <td className="py-2 px-2 sm:px-3 text-center" onClick={(e) => e.stopPropagation()}>
                                   <button
                                     onClick={() => handleSpeakChinese(token.char, `tbl-${idx}`)}
-                                    className="inline-flex items-center justify-center min-h-[40px] min-w-[40px] p-2 rounded-lg text-slate-500 hover:text-indigo-600 active:text-indigo-800 active:bg-indigo-100 transition-all touch-manipulation active:scale-90"
+                                    className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] sm:min-h-[40px] sm:min-w-[40px] p-2 rounded-lg text-slate-500 hover:text-indigo-600 active:text-indigo-800 active:bg-indigo-100 transition-all touch-manipulation active:scale-90"
                                     title={`Play ${token.char}`}
                                   >
                                     <Volume2 className="w-4 h-4" />
@@ -707,21 +685,21 @@ export default function App() {
                       {/* 1. Vietnamese Phonetic Reading */}
                       <div className="p-3.5 sm:p-4 rounded-xl border border-indigo-200 bg-indigo-50/40 relative">
                         <div className="flex items-center justify-between gap-2 mb-2">
-                          <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-indigo-600 inline-block shrink-0" />
-                            <span className="truncate">{t.fulltextPhoneticTitle}</span>
+                          <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 flex items-start gap-1.5 min-w-0">
+                            <span className="w-2 h-2 mt-1 rounded-full bg-indigo-600 inline-block shrink-0" />
+                            <span className="leading-snug">{t.fulltextPhoneticTitle}</span>
                           </span>
                           <div className="flex items-center gap-2 shrink-0">
                             <button
                               onClick={() => handleSpeakVietnamese(result.phoneticVietText, 'ft-vi')}
-                              className="inline-flex items-center justify-center min-h-[40px] min-w-[40px] p-2 rounded-lg text-indigo-700 hover:bg-indigo-100 active:bg-indigo-200 transition-all touch-manipulation active:scale-95"
+                              className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] sm:min-h-[40px] sm:min-w-[40px] p-2 rounded-lg text-indigo-700 hover:bg-indigo-100 active:bg-indigo-200 transition-all touch-manipulation active:scale-95"
                               title="Play Vietnamese audio"
                             >
                               <Volume2 className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleCopy(result.phoneticVietText, 'copy-phonetic')}
-                              className="inline-flex items-center justify-center min-h-[40px] min-w-[40px] p-2 rounded-lg text-indigo-700 hover:bg-indigo-100 active:bg-indigo-200 transition-all touch-manipulation active:scale-95"
+                              className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] sm:min-h-[40px] sm:min-w-[40px] p-2 rounded-lg text-indigo-700 hover:bg-indigo-100 active:bg-indigo-200 transition-all touch-manipulation active:scale-95"
                               title="Copy"
                             >
                               {copiedKey === 'copy-phonetic' ? (
@@ -732,10 +710,10 @@ export default function App() {
                             </button>
                           </div>
                         </div>
-                        <p className="text-base sm:text-lg font-semibold text-indigo-950 font-sans leading-relaxed sm:leading-loose select-all tracking-wide">
+                        <p className="text-base sm:text-lg font-semibold text-indigo-950 font-sans leading-relaxed sm:leading-loose select-all tracking-wide break-words">
                           {result.phoneticVietText}
                         </p>
-                        <p className="mt-2 text-xs text-indigo-600/80 italic">
+                        <p className="mt-2 text-xs text-indigo-700 italic">
                           {t.fulltextPhoneticTip}
                         </p>
                       </div>
@@ -743,21 +721,21 @@ export default function App() {
                       {/* 2. Standard Pinyin Output */}
                       <div className="p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50/70 relative">
                         <div className="flex items-center justify-between gap-2 mb-2">
-                          <span className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block shrink-0" />
-                            <span className="truncate">{t.fulltextPinyinTitle}</span>
+                          <span className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-start gap-1.5 min-w-0">
+                            <span className="w-2 h-2 mt-1 rounded-full bg-emerald-600 inline-block shrink-0" />
+                            <span className="leading-snug">{t.fulltextPinyinTitle}</span>
                           </span>
                           <div className="flex items-center gap-2 shrink-0">
                             <button
                               onClick={() => handleSpeakChinese(inputText, 'ft-pinyin')}
-                              className="inline-flex items-center justify-center min-h-[40px] min-w-[40px] p-2 rounded-lg text-slate-700 hover:bg-slate-200 active:bg-slate-300 transition-all touch-manipulation active:scale-95"
+                              className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] sm:min-h-[40px] sm:min-w-[40px] p-2 rounded-lg text-slate-700 hover:bg-slate-200 active:bg-slate-300 transition-all touch-manipulation active:scale-95"
                               title="Play Chinese audio"
                             >
                               <Volume2 className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleCopy(result.pinyinText, 'copy-pinyin')}
-                              className="inline-flex items-center justify-center min-h-[40px] min-w-[40px] p-2 rounded-lg text-slate-700 hover:bg-slate-200 active:bg-slate-300 transition-all touch-manipulation active:scale-95"
+                              className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] sm:min-h-[40px] sm:min-w-[40px] p-2 rounded-lg text-slate-700 hover:bg-slate-200 active:bg-slate-300 transition-all touch-manipulation active:scale-95"
                               title="Copy"
                             >
                               {copiedKey === 'copy-pinyin' ? (
@@ -768,7 +746,7 @@ export default function App() {
                             </button>
                           </div>
                         </div>
-                        <p className="text-base font-mono font-medium text-slate-800 leading-relaxed sm:leading-loose select-all">
+                        <p className="text-base font-mono font-medium text-slate-800 leading-relaxed sm:leading-loose select-all break-words">
                           {result.pinyinText}
                         </p>
                       </div>
@@ -782,9 +760,9 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 py-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] px-4 text-center text-xs text-slate-400 mt-auto bg-white">
+      <footer className="border-t border-slate-200 py-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] px-4 text-center text-xs text-slate-500 mt-auto bg-white">
         <p>{t.footerText}</p>
-        <p className="mt-1 text-[11px] text-slate-400">
+        <p className="mt-1 text-[11px] text-slate-500">
           OpenCC • pinyin-pro • Web Speech API
         </p>
       </footer>
