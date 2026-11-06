@@ -31,6 +31,32 @@
   background: #94a3b8;
 }
 
+/* Hide scrollbar utility for touch scroll rows */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile touch responsiveness and tap highlight */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+[role="button"],
+textarea,
+input {
+  touch-action: manipulation;
+}
+
+.-webkit-overflow-scrolling-touch {
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Ruby card animations */
 @keyframes fadeIn {
   from {
